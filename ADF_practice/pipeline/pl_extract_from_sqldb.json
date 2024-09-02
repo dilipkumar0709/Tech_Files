@@ -1,5 +1,5 @@
 {
-	"name": "pl_extract_sql",
+	"name": "pl_extract_from_sqldb",
 	"properties": {
 		"activities": [
 			{
