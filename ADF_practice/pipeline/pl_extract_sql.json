@@ -15,6 +15,12 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select * from saleslt.customer",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
@@ -26,12 +32,30 @@
 							"fileExtension": ".txt"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
+				"inputs": [
+					{
+						"referenceName": "ds_generic_sqldb",
+						"type": "DatasetReference"
+					}
+				],
 				"outputs": [
 					{
 						"referenceName": "ds_generic_adls_csv",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"p_target_folder": "customer",
+							"p_target_filename": "customer.csv"
+						}
 					}
 				]
 			}
