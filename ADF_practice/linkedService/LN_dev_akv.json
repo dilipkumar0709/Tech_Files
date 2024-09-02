@@ -1,0 +1,10 @@
+{
+	"name": "LN_dev_akv",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://databricks-secret-255.vault.azure.net/"
+		}
+	}
+}
