@@ -1,0 +1,24 @@
+{
+	"name": "LN_azuresql",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "devdk2024sep.database.windows.net",
+			"database": "dev-db",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "ServicePrincipal",
+			"servicePrincipalId": "bf3672d9-59d2-423a-81e5-b9bea67642e0",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LN_dev_akv",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "dev-etl-sp-secret"
+			},
+			"tenant": "353f4a9d-db4b-45f6-afc6-03ae09877325"
+		}
+	}
+}
