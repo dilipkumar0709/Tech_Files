@@ -1,0 +1,10 @@
+{
+	"name": "LN_adls_Gen2_devaccount",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://datafactory0709storage.dfs.core.windows.net/"
+		}
+	}
+}
