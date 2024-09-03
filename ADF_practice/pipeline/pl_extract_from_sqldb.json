@@ -188,6 +188,140 @@
 					"referenceName": "LN_azuresql",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "log_start_copy1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Pl_extract_from_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_job_task_log]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"job_status": {
+							"value": "",
+							"type": "String"
+						},
+						"status_description": {
+							"value": "",
+							"type": "String"
+						},
+						"task": {
+							"value": "start_extract_task",
+							"type": "String"
+						},
+						"task_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_sequence": {
+							"value": "1",
+							"type": "Int32"
+						},
+						"task_status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "log_start_copy1_copy1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Pl_extract_from_sql",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_job_task_log]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"job_status": {
+							"value": "",
+							"type": "String"
+						},
+						"status_description": {
+							"value": "",
+							"type": "String"
+						},
+						"task": {
+							"value": "start_extract_task",
+							"type": "String"
+						},
+						"task_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_sequence": {
+							"value": "1",
+							"type": "Int32"
+						},
+						"task_status": {
+							"value": "Error",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"folder": {
