@@ -71,7 +71,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "log_start",
+						"activity": "update_job_control",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -190,7 +190,7 @@
 				}
 			},
 			{
-				"name": "log_start_copy1",
+				"name": "end_success_task",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -257,7 +257,7 @@
 				}
 			},
 			{
-				"name": "log_start_copy1_copy1",
+				"name": "end_error_task",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -314,6 +314,64 @@
 						},
 						"task_status": {
 							"value": "Error",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "update_job_control",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "log_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_update_job_control]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_status": {
+							"value": "Running",
 							"type": "String"
 						}
 					}
