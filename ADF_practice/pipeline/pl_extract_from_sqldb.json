@@ -71,7 +71,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "update_job_control",
+						"activity": "update_job_control_running",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -194,7 +194,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Pl_extract_from_sql",
+						"activity": "update_job_control_success",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -257,13 +257,13 @@
 				}
 			},
 			{
-				"name": "end_error_task",
+				"name": "end_failure_task",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Pl_extract_from_sql",
+						"activity": "update_job_control_failure",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -324,7 +324,7 @@
 				}
 			},
 			{
-				"name": "update_job_control",
+				"name": "update_job_control_running",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -372,6 +372,122 @@
 						},
 						"task_status": {
 							"value": "Running",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "update_job_control_success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Pl_extract_from_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_update_job_control]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "update_job_control_failure",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Pl_extract_from_sql",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_update_job_control]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_id": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"task_status": {
+							"value": "Error",
 							"type": "String"
 						}
 					}
