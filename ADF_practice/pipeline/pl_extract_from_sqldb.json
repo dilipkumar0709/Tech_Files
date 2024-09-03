@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "get_task_parameter",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -67,7 +67,7 @@
 				]
 			},
 			{
-				"name": "Lookup1",
+				"name": "get_task_parameter",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
