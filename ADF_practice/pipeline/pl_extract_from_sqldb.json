@@ -5,7 +5,14 @@
 			{
 				"name": "Pl_extract_from_sql",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -58,6 +65,62 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[control].[sp_task_parameters]",
+						"storedProcedureParameters": {
+							"job": {
+								"type": "String",
+								"value": "load_customer"
+							},
+							"job_id": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"task": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							"task_id": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"task_sequence": {
+								"type": "Int32",
+								"value": "1"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_sqldb",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"folder": {
