@@ -24,7 +24,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from saleslt.customer",
+						"sqlReaderQuery": {
+							"value": "@concat(\n    activity('get_task_parameter').output.firstRow,\n    ' where ModifiedDate > ', '''', activity('get_last_run_date').output.firstRow.last_run_date, '''' )\n    \n",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -71,7 +74,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "update_job_control_running",
+						"activity": "get_last_run_date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -194,7 +197,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "update_job_control_success",
+						"activity": "update_last_eun_date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -488,6 +491,98 @@
 						},
 						"task_status": {
 							"value": "Error",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "get_last_run_date",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "update_job_control_running",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[control].[sp_get_last_run_date]",
+						"storedProcedureParameters": {
+							"job": {
+								"type": "String",
+								"value": "load_customer"
+							},
+							"task": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_sqldb",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "update_last_eun_date",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "update_job_control_success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_update_last_run_date]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": "load_customer",
+							"type": "String"
+						},
+						"last_run_date": {
+							"value": {
+								"value": "@pipeline().TriggerTime",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"task": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
