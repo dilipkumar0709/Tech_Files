@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "datafactory0709"
+		},
+		"LN_adls_Gen2_devaccount_properties_typeProperties_url": {
+			"value": "https://datafactory0709storage.dfs.core.windows.net/"
+		},
+		"LN_azuresql_properties_typeProperties_server": {
+			"value": "devdk2024sep.database.windows.net"
+		},
+		"LN_azuresql_properties_typeProperties_database": {
+			"value": "dev-db"
+		},
+		"LN_azuresql_properties_typeProperties_servicePrincipalId": {
+			"value": "bf3672d9-59d2-423a-81e5-b9bea67642e0"
+		},
+		"LN_azuresql_properties_typeProperties_tenant": {
+			"value": "353f4a9d-db4b-45f6-afc6-03ae09877325"
+		},
+		"LN_dev_akv_properties_typeProperties_baseUrl": {
+			"value": "https://databricks-secret-255.vault.azure.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
