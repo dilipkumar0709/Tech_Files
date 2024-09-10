@@ -1,5 +1,5 @@
 {
-	"name": "pl_load_into_target",
+	"name": "pl_load_into_tgt",
 	"properties": {
 		"activities": [
 			{
