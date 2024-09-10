@@ -1149,126 +1149,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_generic_adls_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LN_adls_Gen2_devaccount",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"p_target_folder": {
-						"type": "string"
-					},
-					"p_target_filename": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().p_target_filename",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().p_target_folder",
-							"type": "Expression"
-						},
-						"fileSystem": "landing"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": ""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LN_adls_Gen2_devaccount')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_generic_sqldb')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LN_azuresql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "SalesLT",
-					"table": "Customer"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LN_azuresql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LN_adls_Gen2_devaccount')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('LN_adls_Gen2_devaccount_properties_typeProperties_url')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LN_azuresql')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"server": "[parameters('LN_azuresql_properties_typeProperties_server')]",
-					"database": "[parameters('LN_azuresql_properties_typeProperties_database')]",
-					"encrypt": "mandatory",
-					"trustServerCertificate": false,
-					"authenticationType": "ServicePrincipal",
-					"servicePrincipalId": "[parameters('LN_azuresql_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalCredential": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "LN_dev_akv",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "dev-etl-sp-secret"
-					},
-					"tenant": "[parameters('LN_azuresql_properties_typeProperties_tenant')]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LN_dev_akv')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LN_dev_akv')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('LN_dev_akv_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_load_into_target')]",
+			"name": "[concat(parameters('factoryName'), '/pl_load_into_tgt')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1748,6 +1629,125 @@
 				"[concat(variables('factoryId'), '/datasets/ds_generic_sqldb')]",
 				"[concat(variables('factoryId'), '/linkedServices/LN_azuresql')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_generic_adls_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LN_adls_Gen2_devaccount",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_target_folder": {
+						"type": "string"
+					},
+					"p_target_filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_target_filename",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().p_target_folder",
+							"type": "Expression"
+						},
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": ""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LN_adls_Gen2_devaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_generic_sqldb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "Customer"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LN_azuresql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LN_adls_Gen2_devaccount')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LN_adls_Gen2_devaccount_properties_typeProperties_url')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LN_azuresql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('LN_azuresql_properties_typeProperties_server')]",
+					"database": "[parameters('LN_azuresql_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "ServicePrincipal",
+					"servicePrincipalId": "[parameters('LN_azuresql_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LN_dev_akv",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "dev-etl-sp-secret"
+					},
+					"tenant": "[parameters('LN_azuresql_properties_typeProperties_tenant')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LN_dev_akv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LN_dev_akv')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('LN_dev_akv_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
