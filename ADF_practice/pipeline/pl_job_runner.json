@@ -632,39 +632,57 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
+								"pipeline": {
+									"referenceName": "pl_load_into_tgt",
+									"type": "PipelineReference"
+								},
 								"waitOnCompletion": true
 							}
 						},
 						{
-							"name": "Set_run_id_copy1",
+							"name": "task_successfull",
 							"type": "SetVariable",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"secureOutput": false,
 								"secureInput": false
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "v_run_id",
+								"variableName": "v_task_status",
 								"value": {
-									"value": "@activity('run_task').output.runid",
+									"value": "SUCCESS",
 									"type": "Expression"
 								}
 							}
 						},
 						{
-							"name": "Set_run_id_copy1_copy1",
+							"name": "task_failure",
 							"type": "SetVariable",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
 							"policy": {
 								"secureOutput": false,
 								"secureInput": false
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "v_run_id",
+								"variableName": "v_task_status",
 								"value": {
-									"value": "@activity('run_task').output.runid",
+									"value": "ERROR",
 									"type": "Expression"
 								}
 							}
