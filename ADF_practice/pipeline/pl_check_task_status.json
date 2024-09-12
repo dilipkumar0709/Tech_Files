@@ -1,0 +1,179 @@
+{
+	"name": "pl_check_task_status",
+	"properties": {
+		"activities": [
+			{
+				"name": "get_environment_parameters",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT subscription, rg, adf\nFROM (\n    SELECT parameter, value \n    FROM config.environment\n) AS i\nPIVOT (\n    MAX(value) FOR parameter IN (subscription, rg, adf)\n) AS o;\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generic_sqldb",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "job_failed",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[control].[sp_job_status_update]",
+					"storedProcedureParameters": {
+						"job": {
+							"value": {
+								"value": "@pipeline().parameters.p_job",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"job_id": {
+							"value": {
+								"value": "@variables('v_job_id')",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"status": {
+							"value": {
+								"value": "@variables('v_task_status')",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LN_azuresql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "get_environment_parameters",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(equals(variables('v_task_status'),'InProgress'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "check_task_status",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"url": {
+									"value": "@concat(\n    'https://management.azure.com/subscriptions/',\n    activity('get_environment_parameters').output.firstRow.subscription,\n    '/resourceGroups/',\n    activity('get_environment_parameters').output.firstRow.rg,\n    '/providers/Microsoft.DataFactory/factories/',\n    activity('get_environment_parameters').output.firstRow.adf,\n    '/pipelineruns/',pipeline().parameters.p_run_id,\n    '?api-version=2018-06-01'\n)\n",
+									"type": "Expression"
+								},
+								"authentication": {
+									"type": "MSI",
+									"resource": "https://management.azure.com"
+								}
+							}
+						},
+						{
+							"name": "set_task_status",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_task_status",
+								"value": {
+									"value": "@activity('check_task_status').output.status",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "task_failed",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "check_task_status",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Failed",
+								"errorCode": "ERR-400"
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			}
+		],
+		"parameters": {
+			"p_run_id": {
+				"type": "string"
+			},
+			"p_job": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"v_task_status": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Framework"
+		},
+		"annotations": []
+	}
+}
