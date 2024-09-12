@@ -467,6 +467,8 @@
 		"folder": {
 			"name": "Framework"
 		},
-		"annotations": []
+		"annotations": [
+			"@pipeline().parameters.p_job"
+		]
 	}
 }
