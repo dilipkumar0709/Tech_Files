@@ -311,7 +311,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"method": "POST",
-								"url": "@concat(     'https://management.azure.com/subscriptions/',     activity('get_environment_parameters').output.firstRow.subscription,     '/resourceGroups/',     activity('get_environment_parameters').output.firstRow.rg,     '/providers/Microsoft.DataFactory/factories/',     activity('get_environment_parameters').output.firstRow.adf,     '/pipelines/',     item().task,     '/createRun?api-version=2018-06-01' )",
+								"url": {
+									"value": "@concat(     'https://management.azure.com/subscriptions/',     activity('get_environment_parameters').output.firstRow.subscription,     '/resourceGroups/',     activity('get_environment_parameters').output.firstRow.rg,     '/providers/Microsoft.DataFactory/factories/',     activity('get_environment_parameters').output.firstRow.adf,     '/pipelines/',     item().task,     '/createRun?api-version=2018-06-01' )",
+									"type": "Expression"
+								},
 								"body": {
 									"value": "@concat(\n    '{ ',\n    '\"p_job\" : \"', item().job,\n    '\", \"p_job_id\" : \"', variables('v_job_id'),\n    '\", \"p_task_sequence\" : \"', item().task_sequence,\n    '\" }'\n)\n",
 									"type": "Expression"
@@ -363,7 +366,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "pl_load_into_tgt",
+									"referenceName": "pl_check_task_status",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true
